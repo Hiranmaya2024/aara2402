@@ -123,8 +123,11 @@ phone:r[13],
 lat:parseFloat(r[14]),
 lng:parseFloat(r[15]),
 lastSale:r[17],
-lastCollection:r[18],
-route:r[19]
+lastCollection:r[19],
+saleAmt:r[18],
+collectionAmt[20],
+OrdersDisMonth[21],
+route:r[22]
 }))
 
 todayRoute=customers.filter(c=>todayAreas.includes(c.area))
@@ -236,11 +239,15 @@ Customer Profile
 <div class="info"><b>Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
 <div class="info"><b>Area:</b> ${selected.area}</div>
 
-<div class="info"><b>Total Business:</b> ₹${selected.business}</div>
-<div class="info"><b>Total Due:</b> ₹${selected.due}</div>
+<div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
+<div class="info">💥<b>Total Due:</b> ₹${selected.due}</div>
 
 <div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale}</div>
-<div class="info">💰 <b>Last Payment:</b> ${selected.lastCollection}</div>
+<div class="info">₹ <b>Last Sale Amount:</b> ${selected.saleAmte}</div>
+<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection}</div>
+<div class="info">₹ <b>Last Collection Amount:</b> ${selected.collectionAmt}</div>
+<div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
+
 <div class="info">🗺 <b>Route:</b> ${selected.route}</div>
 
 <div class="info"><b>Status:</b> ${selected.status}</div>
@@ -274,4 +281,5 @@ navigator.serviceWorker.register('service-worker.js')
 </script>
 
 </body>
+
 </html>

@@ -235,13 +235,13 @@ Customer Profile
 
 <div class="profileCard">
 
-<h2>${selected.name}</h2>
+<h2>${selected.name}📍Area: ${selected.area}📌${selected.route}</h2>
 
 <div class="info"><b>☎Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
 <div class="info"><b>📍Area:</b> ${selected.area}📌${selected.route}</div>
 
 <div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
-<div class="info">💥<b>Total Due:</b> ₹${selected.due}⏱ Avg Pymt Cycle ${selected.avgcreditcycle}</div>
+<div class="info">💥<b>Total Due:</b> ₹${selected.due}⏰<b>Avg Pymt Cycle:</b> ${selected.avgcreditcycle}</div>
 
 <div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
 <div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
@@ -249,7 +249,7 @@ Customer Profile
 
 <div class="info"><b>🗨Status:</b> ${selected.status}</div>
 <div class="info"><b>⁉Reason:</b> ${selected.reason}</div>
-<div class="info"><b>✔Reactivate by paying:💰₹</b> ₹${selected.reactivate}</div>
+<div class="info"><b>✔Reactivate by paying:💰</b> ₹${selected.reactivate}</div>
 
 <div class="actionRow">
 <button class="call" onclick="call()">📞 Call</button>
@@ -280,6 +280,7 @@ navigator.serviceWorker.register('service-worker.js')
 </body>
 
 </html>
+
 
 
 

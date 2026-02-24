@@ -67,7 +67,7 @@ flex:1;padding:14px;border:none;border-radius:10px;color:#fff;font-weight:600
 
 <div id="mainScreen">
 
-<div class="header">Aaradhya Recovery Dashboard</div>
+<div class="header">AaradhyA Today Dashboard</div>
 
 <div id="routeBox" class="routeBox"></div>
 
@@ -242,9 +242,9 @@ Customer Profile
 <div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
 <div class="info">💥<b>Total Due:</b> ₹${selected.due}</div>
 
-<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale}</div>
+<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} || ${selected.saleAmt}</div>
 <div class="info">₹ <b>Last Sale Amount:</b> ${selected.saleAmt}</div>
-<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection}</div>
+<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} || ${selected.collectionAmt}</div>
 <div class="info">₹ <b>Last Collection Amount:</b> ${selected.collectionAmt}</div>
 <div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
 
@@ -283,4 +283,5 @@ navigator.serviceWorker.register('service-worker.js')
 </body>
 
 </html>
+
 

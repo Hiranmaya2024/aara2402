@@ -118,6 +118,7 @@ status:r[2],
 reason:r[3],
 reactivate:r[4],
 business:r[5],
+avgcreditcycle:r[8],
 due:parseFloat(r[6])||0,
 phone:r[13],
 lat:parseFloat(r[14]),
@@ -240,15 +241,15 @@ Customer Profile
 <div class="info"><b>📍Area:</b> ${selected.area}📌${selected.route}</div>
 
 <div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
-<div class="info">💥<b>Total Due:</b> ₹${selected.due}</div>
+<div class="info">💥<b>Total Due:</b> ₹${selected.due}⏱ Avg Pymt Cycle ${selected.avgcreditcycle}</div>
 
 <div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
 <div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
 <div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
 
-<div class="info"><b>Status:</b> ${selected.status}</div>
-<div class="info"><b>Reason:</b> ${selected.reason}</div>
-<div class="info"><b>Reactivate by paying:💰₹</b> ₹${selected.reactivate}</div>
+<div class="info"><b>🗨Status:</b> ${selected.status}</div>
+<div class="info"><b>⁉Reason:</b> ${selected.reason}</div>
+<div class="info"><b>✔Reactivate by paying:💰₹</b> ₹${selected.reactivate}</div>
 
 <div class="actionRow">
 <button class="call" onclick="call()">📞 Call</button>
@@ -279,6 +280,7 @@ navigator.serviceWorker.register('service-worker.js')
 </body>
 
 </html>
+
 
 
 

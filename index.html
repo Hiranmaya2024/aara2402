@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aaradhya Recovery Dashboard</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d6efd">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{font-family:Poppins;margin:0;background:#f4f6f9}
+.header{background:#0d6efd;color:#fff;padding:14px;font-weight:600}
+
+.routeBox{
+background:#fff;margin:10px;padding:14px;border-radius:14px;
+display:grid;grid-template-columns:1fr 1fr;gap:14px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08)
+}
+
+.leftBox{font-size:14px;line-height:1.9}
+.partyList{max-height:170px;overflow:auto;font-size:13px}
+
+.grid{padding:10px;display:grid;gap:12px}
+.customer{
+background:#fff;padding:14px;border-radius:12px;
+box-shadow:0 2px 6px rgba(0,0,0,0.08)
+}
+
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.grid{grid-template-columns:1fr 1fr 1fr}}
+
+.profileWrapper{background:#f4f6f9;min-height:100vh}
+.profileHeader{
+background:linear-gradient(135deg,#2b6cb0,#1e4e8c);
+color:#fff;padding:18px;font-size:18px;font-weight:600;
+display:flex;align-items:center;gap:10px
+}
+
+.backBtn{
+background:#ffffff33;border:none;color:#fff;padding:6px 12px;border-radius:8px
+}
+
+.profileCard{
+background:#fff;margin:15px;padding:18px;border-radius:18px;
+box-shadow:0 6px 16px rgba(0,0,0,0.15)
+}
+
+.info{margin:8px 0}
+.actionRow{display:flex;gap:10px;margin-top:20px}
+
+.actionRow button{
+flex:1;padding:14px;border:none;border-radius:10px;color:#fff;font-weight:600
+}
+
+.call{background:#34a853}
+.wa{background:#25D366}
+.nav{background:#2b6cb0}
+.tour{background:#ff9800;margin-top:10px;width:100%}
+</style>
+</head>
+
+<body>
+
+<div id="mainScreen">
+
+<div class="header">Aaradhya Recovery Dashboard</div>
+
+<div id="routeBox" class="routeBox"></div>
+
+<div id="customerGrid" class="grid"></div>
+
+</div>
+
+<div id="profileScreen" style="display:none"></div>
+
+<script>
+
+const HQ_LAT=20.9964
+const HQ_LNG=83.0526
+
+const csvUrl="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3bMMFf71-vdGNiWFnf7pD9XuAAUSA7J-g08ocyC2LNiVOTUHi56lB-7bKTKj0KK9nJGs9vU0THQ0E/pub?gid=1044390124&single=true&output=csv"
+
+const tourPlan={
+Monday:["Juria"],Tuesday:["Ghess"],Wednesday:["Gaisilate"],
+Thursday:["Dava"],Friday:["Padampur"],Saturday:["Paikmal","Mandosil"]
+}
+
+let customers=[],todayRoute=[],selected={}
+const today=new Date().toLocaleDateString('en-US',{weekday:'long'})
+const todayAreas=tourPlan[today]||[]
+
+function parseCSV(text){
+const rows=[];let row=[],value="",insideQuotes=false
+for(let char of text){
+if(char=='"'){insideQuotes=!insideQuotes;continue}
+if(char==","&&!insideQuotes){row.push(value);value="";continue}
+if((char=="\n"||char=="\r")&&!insideQuotes){
+if(value||row.length){row.push(value);rows.push(row)}
+row=[];value="";continue}
+value+=char}
+return rows
+}
+
+fetch(csvUrl)
+.then(res=>res.text())
+.then(text=>{
+
+let rows=parseCSV(text).slice(1).filter(r=>r[0])
+
+customers=rows.map(r=>({
+name:r[0],
+area:r[1],
+status:r[2],
+reason:r[3],
+reactivate:r[4],
+business:r[5],
+due:parseFloat(r[6])||0,
+phone:r[13],
+lat:parseFloat(r[14]),
+lng:parseFloat(r[15]),
+lastSale:r[17],
+lastCollection:r[18],
+route:r[19]
+}))
+
+todayRoute=customers.filter(c=>todayAreas.includes(c.area))
+customers.sort((a,b)=>getRecoveryScore(b)-getRecoveryScore(a))
+
+renderAll()
+
+})
+
+function getRecoveryScore(c){
+const creditDays=Math.floor((new Date()-new Date(c.lastSale))/86400000)
+let score=0
+if(c.status.toLowerCase().includes("blocked")) score+=1000
+if(creditDays>90) score+=500
+else if(creditDays>60) score+=300
+score+=c.due/1000
+return score
+}
+
+function getDist(a,b,c,d){
+const R=6371
+const dLat=(c-a)*Math.PI/180
+const dLng=(d-b)*Math.PI/180
+const x=Math.sin(dLat/2)**2+
+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
+Math.sin(dLng/2)**2
+return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))
+}
+
+function calcRoute(){
+let total=0,prevLat=HQ_LAT,prevLng=HQ_LNG
+todayRoute.forEach(p=>{
+if(p.lat){total+=getDist(prevLat,prevLng,p.lat,p.lng)
+prevLat=p.lat;prevLng=p.lng}})
+total+=getDist(prevLat,prevLng,HQ_LAT,HQ_LNG)
+return total
+}
+
+function renderAll(){
+
+let totalDist=calcRoute()
+let time=(totalDist/25).toFixed(1)
+
+routeBox.innerHTML=`
+<div class="leftBox">
+<b>🗓 Today’s Route – ${todayAreas.join(", ")}</b><br>
+✔ Parties: ${todayRoute.length}<br>
+✔ Round-trip: ${totalDist.toFixed(1)} km<br>
+✔ Travel time: ${time} hrs<br>
+<button class="tour" onclick="startTour()">🧭 Start Tour</button>
+</div>
+
+<div class="partyList">
+${todayRoute.map((c,i)=>`
+<div onclick="openProfileByName('${c.name}')">
+${i+1}. ${c.name}<br>
+📍 ${getDist(HQ_LAT,HQ_LNG,c.lat,c.lng).toFixed(1)} km
+</div>`).join("")}
+</div>
+`
+
+customerGrid.innerHTML=""
+
+customers.forEach(c=>{
+
+let creditDays=Math.floor((new Date()-new Date(c.lastSale))/86400000)
+
+let tag=""
+if(c.status.toLowerCase().includes("blocked")) tag="🔴 BLOCKED"
+else if(c.due>0 && creditDays>60) tag="💰 COLLECT NOW"
+else if(creditDays>60) tag="🟡 FOLLOW UP"
+
+customerGrid.innerHTML+=`
+<div class="customer" onclick="openProfileByName('${c.name}')">
+<b>${c.name}</b><br>
+${c.area} | ₹${c.due} | 📍 ${
+(c.lat && c.lng)
+? getDist(HQ_LAT,HQ_LNG,c.lat,c.lng).toFixed(1)+" km":"—"}
+<br>${tag}
+</div>`
+})
+
+}
+
+function startTour(){
+let route=todayRoute.map(c=>`${c.lat},${c.lng}`).join("/")
+window.open(`https://www.google.com/maps/dir/${HQ_LAT},${HQ_LNG}/${route}/${HQ_LAT},${HQ_LNG}`)
+}
+
+function openProfileByName(name){
+
+selected=customers.find(c=>c.name===name)
+
+mainScreen.style.display="none"
+profileScreen.style.display="block"
+
+profileScreen.innerHTML=`
+<div class="profileWrapper">
+
+<div class="profileHeader">
+<button class="backBtn" onclick="goBack()">⬅ Back</button>
+Customer Profile
+</div>
+
+<div class="profileCard">
+
+<h2>${selected.name}</h2>
+
+<div class="info"><b>Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
+<div class="info"><b>Area:</b> ${selected.area}</div>
+
+<div class="info"><b>Total Business:</b> ₹${selected.business}</div>
+<div class="info"><b>Total Due:</b> ₹${selected.due}</div>
+
+<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale}</div>
+<div class="info">💰 <b>Last Payment:</b> ${selected.lastCollection}</div>
+<div class="info">🗺 <b>Route:</b> ${selected.route}</div>
+
+<div class="info"><b>Status:</b> ${selected.status}</div>
+<div class="info"><b>Reason:</b> ${selected.reason}</div>
+<div class="info"><b>Reactivate by paying:</b> ₹${selected.reactivate}</div>
+
+<div class="actionRow">
+<button class="call" onclick="call()">📞 Call</button>
+<button class="wa" onclick="whatsapp()">🟢 WhatsApp</button>
+<button class="nav" onclick="navigate()">📍 Navigate</button>
+</div>
+
+</div>
+</div>
+`
+}
+
+function goBack(){
+profileScreen.style.display="none"
+mainScreen.style.display="block"
+}
+
+function call(){window.location.href="tel:"+selected.phone}
+function whatsapp(){window.open(`https://wa.me/91${selected.phone}`)}
+function navigate(){window.open(`https://www.google.com/maps?q=${selected.lat},${selected.lng}`)}
+
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('service-worker.js')
+}
+
+</script>
+
+</body>
+</html>

@@ -235,20 +235,20 @@ Customer Profile
 
 <div class="profileCard">
 
-<h2>${selected.name}📍 ${selected.area}📌${selected.route}</h2>
+<h2>${selected.name}📍${selected.area}📌${selected.route}</h2>
 
 <div class="info"><b>☎Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
 
 <div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
-<div class="info">💥<b>Total Due:</b> ₹${selected.due}⏰<b>Avg Pymt Cycle:</b> ${selected.avgcreditcycle}</div>
+<div class="info">💥<b>Total Due:</b> ₹${selected.due} ⏰<b>Avg Pymt Cycle:</b> ${selected.avgcreditcycle} Days</div>
 
-<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
-<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
+<div class="info">📅<b>Last Sale on:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
+<div class="info">📅<b>Last Payment on:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
 <div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
 
-<div class="info"><b>🗨Status:</b> ${selected.status}</div>
-<div class="info"><b>⁉Reason:</b> ${selected.reason}</div>
-<div class="info"><b>✔Reactivate by paying:💰</b> ₹${selected.reactivate}</div>
+<div class="info"><b>🔰Status:</b> ${selected.status}</div>
+<div class="info"><b>💡Reason:</b> ${selected.reason}</div>
+<div class="info"><b>✅Pay Now:💰</b> ₹${selected.reactivate}</div>
 
 <div class="actionRow">
 <button class="call" onclick="call()">📞 Call</button>
@@ -279,6 +279,7 @@ navigator.serviceWorker.register('service-worker.js')
 </body>
 
 </html>
+
 
 
 

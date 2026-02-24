@@ -236,23 +236,19 @@ Customer Profile
 
 <h2>${selected.name}</h2>
 
-<div class="info"><b>Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
-<div class="info"><b>Area:</b> ${selected.area}</div>
+<div class="info"><b>☎Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
+<div class="info"><b>📍Area:</b> ${selected.area}📌${selected.route}</div>
 
 <div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
 <div class="info">💥<b>Total Due:</b> ₹${selected.due}</div>
 
-<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} || ${selected.saleAmt}</div>
-<div class="info">₹ <b>Last Sale Amount:</b> ${selected.saleAmt}</div>
-<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} || ${selected.collectionAmt}</div>
-<div class="info">₹ <b>Last Collection Amount:</b> ${selected.collectionAmt}</div>
+<div class="info">📅 <b>Last Sale Date:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
+<div class="info">📅<b>Last Payment Date:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
 <div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
-
-<div class="info">🗺 <b>Route:</b> ${selected.route}</div>
 
 <div class="info"><b>Status:</b> ${selected.status}</div>
 <div class="info"><b>Reason:</b> ${selected.reason}</div>
-<div class="info"><b>Reactivate by paying:</b> ₹${selected.reactivate}</div>
+<div class="info"><b>Reactivate by paying:💰₹</b> ₹${selected.reactivate}</div>
 
 <div class="actionRow">
 <button class="call" onclick="call()">📞 Call</button>
@@ -283,5 +279,6 @@ navigator.serviceWorker.register('service-worker.js')
 </body>
 
 </html>
+
 
 

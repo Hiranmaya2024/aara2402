@@ -1,288 +1,1728 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Aaradhya Recovery Dashboard</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0d6efd">
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+<title>Aaradhya Sales Force Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body{font-family:Poppins;margin:0;background:#f4f6f9}
-.header{background:#0d6efd;color:#fff;padding:14px;font-weight:600}
-
-.routeBox{
-background:#fff;margin:10px;padding:14px;border-radius:14px;
-display:grid;grid-template-columns:1fr 1fr;gap:14px;
-box-shadow:0 2px 10px rgba(0,0,0,0.08)
+:root {
+  --teal: #00524A;
+  --teal-mid: #007A6E;
+  --teal-lt: #0A9B8C;
+  --gold: #C8922A;
+  --gold-lt: #E5B84A;
+  --cream: #F8F4EE;
+  --dark: #111C1A;
+  --muted: #5A7A75;
+  --white: #FFFFFF;
+  --border: #D4E0DE;
+  --danger: #C0392B;
+  --success: #1E8B5E;
+  --warn: #D68910;
+  --card-bg: #FFFFFF;
+  --page-bg: #F4F7F6;
+  --sidebar-bg: #0D1F1C;
+  --sidebar-text: #A8C5C1;
+  --sidebar-active: #00524A;
 }
 
-.leftBox{font-size:14px;line-height:1.9}
-.partyList{max-height:170px;overflow:auto;font-size:13px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--page-bg); color: var(--dark); }
 
-.grid{padding:10px;display:grid;gap:12px}
-.customer{
-background:#fff;padding:14px;border-radius:12px;
-box-shadow:0 2px 6px rgba(0,0,0,0.08)
+/* ─── SHARED ─── */
+.hidden { display: none !important; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 6px; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s ease; text-decoration: none;
+}
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--teal-mid); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,82,74,0.3); }
+.btn-gold { background: var(--gold); color: #fff; }
+.btn-gold:hover { background: var(--gold-lt); transform: translateY(-1px); }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--dark); }
+.btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { opacity: 0.85; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.tag {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.3px;
+}
+.tag-active { background: #E6F4F0; color: var(--success); }
+.tag-pending { background: #FEF3CD; color: var(--warn); }
+.tag-deployed { background: #E8F4FF; color: #1A6FAF; }
+.tag-inactive { background: #F0F0F0; color: #777; }
+.tag-open { background: #FEF3CD; color: var(--warn); }
+.tag-closed { background: #E6F4F0; color: var(--success); }
+
+/* ─── VIEWS ─── */
+#public-view, #login-view, #dashboard-view { display: none; }
+#public-view.active, #login-view.active, #dashboard-view.active { display: block; }
+
+/* ══════════════════════════════════════
+   PUBLIC WEBSITE
+══════════════════════════════════════ */
+.pub-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(17,28,26,0.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200,146,42,0.2);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 64px;
+}
+.pub-logo {
+  font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700;
+  color: #fff; letter-spacing: 0.5px;
+}
+.pub-logo span { color: var(--gold-lt); }
+.pub-nav-links { display: flex; align-items: center; gap: 32px; }
+.pub-nav-links a {
+  color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px;
+  transition: color 0.18s;
+}
+.pub-nav-links a:hover { color: var(--gold-lt); }
+.pub-nav-right { display: flex; gap: 12px; align-items: center; }
+
+/* HERO */
+.hero {
+  min-height: 100vh; background: var(--dark);
+  display: flex; align-items: center;
+  position: relative; overflow: hidden; padding-top: 64px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0,82,74,0.35) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 20% 80%, rgba(200,146,42,0.12) 0%, transparent 60%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(var(--gold) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--gold) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2; max-width: 1200px;
+  margin: 0 auto; padding: 80px 40px; width: 100%;
+}
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--gold-lt); letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 40px; height: 1px; background: var(--gold);
+}
+.hero-h1 {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 7vw, 92px);
+  font-weight: 700; color: #fff; line-height: 1.0; margin-bottom: 12px;
+}
+.hero-h1 em { color: var(--gold-lt); font-style: italic; }
+.hero-sub {
+  font-size: 18px; color: rgba(255,255,255,0.6); line-height: 1.6;
+  max-width: 520px; margin-bottom: 40px; margin-top: 20px;
+}
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 60px; }
+.hero-stats { display: flex; gap: 48px; flex-wrap: wrap; }
+.hero-stat-val {
+  font-family: 'Cormorant Garamond', serif; font-size: 42px;
+  font-weight: 700; color: #fff; line-height: 1;
+}
+.hero-stat-val span { color: var(--gold-lt); }
+.hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; letter-spacing: 0.5px; }
+.hero-badge {
+  position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+  width: 280px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(200,146,42,0.2); border-radius: 16px;
+  padding: 24px; backdrop-filter: blur(10px);
+}
+.hero-badge-title {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--gold-lt); letter-spacing: 2px; margin-bottom: 16px;
+}
+.hero-badge-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px; color: rgba(255,255,255,0.75);
+}
+.hero-badge-item:last-child { border-bottom: none; }
+.hero-badge-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(200,146,42,0.6);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* SECTION COMMON */
+.pub-section { padding: 90px 40px; max-width: 1200px; margin: 0 auto; }
+.section-label {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--gold); letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700; color: var(--dark); line-height: 1.1; margin-bottom: 16px;
+}
+.section-sub { font-size: 16px; color: var(--muted); line-height: 1.7; max-width: 540px; }
+
+/* CHALLENGE */
+#challenge { background: var(--cream); }
+#challenge .pub-section { max-width: 100%; }
+.challenge-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px; margin-top: 48px; max-width: 1200px; margin-left: auto; margin-right: auto;
+}
+.challenge-card {
+  background: #fff; border-radius: 12px; padding: 28px;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.challenge-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,82,74,0.1); }
+.challenge-card-bar {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+}
+.challenge-icon { font-size: 28px; margin-bottom: 14px; }
+.challenge-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.challenge-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* SERVICES */
+.services-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; margin-top: 48px;
+}
+.service-card {
+  background: var(--white); border-radius: 12px; padding: 32px;
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.service-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,82,74,0.1); }
+.service-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 18px;
+}
+.service-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+.service-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+/* PROCESS */
+#process { background: var(--dark); }
+#process .section-title { color: #fff; }
+#process .section-sub { color: rgba(255,255,255,0.5); }
+#process .section-label { color: var(--gold-lt); }
+.process-steps {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2px; margin-top: 56px; background: rgba(255,255,255,0.05);
+  border-radius: 16px; overflow: hidden;
+}
+.process-step {
+  background: rgba(255,255,255,0.02); padding: 32px 24px;
+  border-right: 1px solid rgba(255,255,255,0.05); position: relative;
+  transition: background 0.2s;
+}
+.process-step:last-child { border-right: none; }
+.process-step:hover { background: rgba(0,122,110,0.15); }
+.step-num {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--gold); letter-spacing: 2px; margin-bottom: 16px;
+}
+.step-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 10px; }
+.step-body { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+.step-arrow {
+  position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  color: var(--gold); font-size: 16px; z-index: 2;
 }
 
-@media(min-width:700px){.grid{grid-template-columns:1fr 1fr}}
-@media(min-width:1000px){.grid{grid-template-columns:1fr 1fr 1fr}}
+/* COVERAGE */
+.coverage-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 48px; }
+.coverage-col { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.coverage-col-head {
+  padding: 16px 24px; font-size: 12px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.coverage-col-head.teal { background: var(--teal); color: #fff; }
+.coverage-col-head.gold { background: var(--gold); color: #fff; }
+.coverage-list { padding: 8px 0; }
+.coverage-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 24px; border-bottom: 1px solid var(--border); font-size: 14px;
+}
+.coverage-item:last-child { border-bottom: none; }
+.coverage-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.coverage-callout {
+  background: var(--dark); border-radius: 12px; padding: 32px;
+  color: #fff; margin-top: 24px; grid-column: 1 / -1;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+}
+.coverage-callout p { font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 560px; }
 
-.profileWrapper{background:#f4f6f9;min-height:100vh}
-.profileHeader{
-background:linear-gradient(135deg,#2b6cb0,#1e4e8c);
-color:#fff;padding:18px;font-size:18px;font-weight:600;
-display:flex;align-items:center;gap:10px
+/* PRICING */
+#pricing { background: var(--cream); }
+#pricing .pub-section { max-width: 100%; }
+.pricing-inner { max-width: 1200px; margin: 0 auto; }
+.pricing-table {
+  background: #fff; border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border); max-width: 520px; margin-top: 48px;
+  box-shadow: 0 8px 32px rgba(0,82,74,0.08);
+}
+.pricing-table-head {
+  background: var(--teal); color: #fff; padding: 18px 28px;
+  font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+}
+.pricing-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 28px; border-bottom: 1px solid var(--border); font-size: 15px;
+}
+.pricing-row:last-child { border-bottom: none; }
+.pricing-row .label { color: var(--muted); }
+.pricing-row .value { font-weight: 600; color: var(--teal); }
+.pricing-features { margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.pricing-feat {
+  background: #fff; border-radius: 10px; padding: 20px 24px;
+  border: 1px solid var(--border); display: flex; gap: 14px; align-items: flex-start;
+}
+.pricing-feat-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.pricing-feat h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.pricing-feat p { font-size: 13px; color: var(--muted); }
+
+/* ENQUIRY */
+.enquiry-wrap {
+  background: var(--dark); border-radius: 20px; padding: 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+  margin-top: 56px;
+}
+.enquiry-left h2 {
+  font-family: 'Cormorant Garamond', serif; font-size: 38px;
+  font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 16px;
+}
+.enquiry-left p { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 28px; }
+.enquiry-promise {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 10px;
+}
+.enquiry-promise span { color: var(--gold-lt); font-size: 16px; }
+.enquiry-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+.form-group input, .form-group select, .form-group textarea {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 12px 14px; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  transition: border-color 0.18s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--teal-lt);
+}
+.form-group select option { background: var(--dark); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* FOOTER */
+.pub-footer {
+  background: #080E0D; color: rgba(255,255,255,0.4);
+  padding: 32px 40px; display: flex;
+  align-items: center; justify-content: space-between; font-size: 13px;
+}
+.pub-footer strong { color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; font-size: 16px; }
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+#login-view {
+  min-height: 100vh; background: var(--dark);
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(200,146,42,0.2);
+  border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 380px;
+  backdrop-filter: blur(10px);
+}
+.login-logo {
+  font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700;
+  color: #fff; text-align: center; margin-bottom: 6px;
+}
+.login-logo span { color: var(--gold-lt); }
+.login-sub { text-align: center; font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 36px; }
+.login-form { display: flex; flex-direction: column; gap: 14px; }
+.login-form label { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.5px; display: block; margin-bottom: 5px; }
+.login-form input {
+  width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 12px 14px; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+}
+.login-form input:focus { outline: none; border-color: var(--teal-lt); }
+.login-err { color: #FF6B6B; font-size: 13px; text-align: center; margin-top: -4px; }
+.login-hint { text-align: center; font-size: 12px; color: rgba(255,255,255,0.25); margin-top: 16px; }
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+.dash-layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; background: var(--sidebar-bg); flex-shrink: 0;
+  display: flex; flex-direction: column; position: fixed;
+  top: 0; bottom: 0; left: 0; overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700;
+  color: #fff; letter-spacing: 0.3px;
+}
+.sidebar-logo span { color: var(--gold-lt); }
+.sidebar-logo small { display: block; font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.3); font-weight: 400; margin-top: 2px; letter-spacing: 1px; }
+.sidebar-section { padding: 20px 12px 8px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.2);
+  letter-spacing: 2px; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px;
+}
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 8px; cursor: pointer;
+  font-size: 14px; color: var(--sidebar-text); transition: all 0.15s;
+  margin-bottom: 2px; user-select: none;
+}
+.sidebar-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.sidebar-item.active { background: var(--teal); color: #fff; }
+.sidebar-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-bottom {
+  margin-top: auto; padding: 16px 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; color: rgba(255,255,255,0.5); font-size: 13px;
+}
+.sidebar-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--teal); display: flex; align-items: center;
+  justify-content: center; font-size: 13px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
 }
 
-.backBtn{
-background:#ffffff33;border:none;color:#fff;padding:6px 12px;border-radius:8px
+.dash-main {
+  margin-left: 240px; flex: 1; min-height: 100vh;
+  display: flex; flex-direction: column;
 }
-
-.profileCard{
-background:#fff;margin:15px;padding:18px;border-radius:18px;
-box-shadow:0 6px 16px rgba(0,0,0,0.15)
+.dash-topbar {
+  background: #fff; border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 60px; display: flex;
+  align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
 }
+.dash-topbar h1 { font-size: 18px; font-weight: 600; color: var(--dark); }
+.dash-content { padding: 28px 32px; flex: 1; }
 
-.info{margin:8px 0}
-.actionRow{display:flex;gap:10px;margin-top:20px}
+/* DASH PANELS */
+.dash-panel { display: none; }
+.dash-panel.active { display: block; }
 
-.actionRow button{
-flex:1;padding:14px;border:none;border-radius:10px;color:#fff;font-weight:600
+/* OVERVIEW */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.kpi-card {
+  background: #fff; border-radius: 12px; padding: 20px 22px;
+  border: 1px solid var(--border); position: relative; overflow: hidden;
 }
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.kpi-card.teal::before { background: var(--teal); }
+.kpi-card.gold::before { background: var(--gold); }
+.kpi-card.blue::before { background: #1A6FAF; }
+.kpi-card.green::before { background: var(--success); }
+.kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+.kpi-val { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 700; color: var(--dark); line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.dash-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-.call{background:#34a853}
-.wa{background:#25D366}
-.nav{background:#2b6cb0}
-.tour{background:#ff9800;margin-top:10px;width:100%}
+/* TABLE */
+.dash-table-wrap { background: #fff; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.dash-table-head {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dash-table-head h3 { font-size: 15px; font-weight: 600; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 10px 16px; font-size: 11px;
+  font-weight: 600; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.5px; background: #FAFAFA; border-bottom: 1px solid var(--border);
+}
+td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(0,82,74,0.02); }
+.empty-row td { text-align: center; color: var(--muted); padding: 32px; font-size: 14px; }
+
+/* SEARCH & FILTER */
+.filter-bar {
+  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+}
+.filter-bar input, .filter-bar select {
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark);
+  background: #fff;
+}
+.filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: var(--teal); }
+.filter-bar input { flex: 1; min-width: 200px; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  background: #fff; border-radius: 16px; padding: 28px 32px;
+  width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+}
+.modal h2 { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+.modal-form { display: flex; flex-direction: column; gap: 14px; }
+.modal-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-form .form-group label { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.3px; display: block; margin-bottom: 5px; }
+.modal-form input, .modal-form select, .modal-form textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+  color: var(--dark); background: #fff; transition: border-color 0.15s;
+}
+.modal-form input:focus, .modal-form select:focus, .modal-form textarea:focus {
+  outline: none; border-color: var(--teal);
+}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
+.modal-close-btn {
+  position: absolute; top: 16px; right: 16px; background: none;
+  border: none; font-size: 20px; cursor: pointer; color: var(--muted);
+  padding: 4px 8px; border-radius: 6px;
+}
+.modal-close-btn:hover { background: var(--page-bg); }
+
+/* ACTIVITY */
+.activity-list { display: flex; flex-direction: column; gap: 0; }
+.activity-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  margin-top: 5px; flex-shrink: 0;
+}
+.activity-text { font-size: 14px; line-height: 1.5; }
+.activity-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* LEADS */
+.leads-list { display: flex; flex-direction: column; gap: 12px; margin-top: 0; }
+.lead-card {
+  background: #fff; border-radius: 10px; border: 1px solid var(--border);
+  padding: 16px 20px; display: flex; justify-content: space-between; align-items: flex-start;
+}
+.lead-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.lead-card .lead-meta { font-size: 13px; color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap; }
+.lead-card .lead-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 16px; }
+
+/* PAYROLL */
+.payroll-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.payroll-sum-card {
+  background: #fff; border-radius: 10px; padding: 16px 18px;
+  border: 1px solid var(--border); text-align: center;
+}
+.payroll-sum-val { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700; color: var(--teal); }
+.payroll-sum-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* RESPONSIVE basics */
+@media (max-width: 900px) {
+  .hero-badge { display: none; }
+  .coverage-wrap { grid-template-columns: 1fr; }
+  .enquiry-wrap { grid-template-columns: 1fr; padding: 32px; }
+  .dash-grid-2 { grid-template-columns: 1fr; }
+  .sidebar { width: 200px; }
+  .dash-main { margin-left: 200px; }
+}
+@media (max-width: 680px) {
+  .pub-nav-links { display: none; }
+  .sidebar { transform: translateX(-100%); }
+  .dash-main { margin-left: 0; }
+  .form-row { grid-template-columns: 1fr; }
+  .modal-form .form-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
-
 <body>
 
-<div id="mainScreen">
+<!-- ════════════════════════════════════
+     PUBLIC WEBSITE
+════════════════════════════════════ -->
+<div id="public-view" class="active">
 
-<div class="header">AaradhyA Today Dashboard</div>
+  <!-- NAV -->
+  <nav class="pub-nav">
+    <div class="pub-logo">Aaradhya <span>SFS</span></div>
+    <div class="pub-nav-links">
+      <a href="#services">Services</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#process">Process</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#enquiry">Contact</a>
+    </div>
+    <div class="pub-nav-right">
+      <button class="btn btn-outline" onclick="showLogin()">Dashboard Login</button>
+      <a href="#enquiry" class="btn btn-gold">Get Started</a>
+    </div>
+  </nav>
 
-<div id="routeBox" class="routeBox"></div>
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">Odisha's Pharma Field Force Specialists</div>
+      <h1 class="hero-h1">Your Sales Force,<br><em>Deployed.</em></h1>
+      <p class="hero-sub">End-to-end Medical Representative recruitment, payroll and deployment across Odisha and Eastern India — from first shortlist to field-ready in 48 hours.</p>
+      <div class="hero-cta">
+        <a href="#enquiry" class="btn btn-gold" style="font-size:15px;padding:13px 28px;">Share Your Requirement</a>
+        <a href="#process" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,0.25);font-size:15px;padding:13px 28px;">See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-val">48<span>hr</span></div>
+          <div class="hero-stat-label">Avg. Shortlist Delivery</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">6<span>+</span></div>
+          <div class="hero-stat-label">Districts Covered</div>
+        </div>
+        <div>
+          <div class="hero-stat-val">30<span>+</span></div>
+          <div class="hero-stat-label">Active Candidates Ready</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-badge">
+      <div class="hero-badge-title">CURRENTLY ACTIVE</div>
+      <div class="hero-badge-item"><div class="hero-badge-dot"></div>MR Recruitment — Odisha</div>
+      <div class="hero-badge-item"><div class="hero-badge-dot"></div>Payroll Outsourcing</div>
+      <div class="hero-badge-item"><div class="hero-badge-dot"></div>Tier-2 / Tier-3 Deployment</div>
+      <div class="hero-badge-item"><div class="hero-badge-dot"></div>Compliance Support</div>
+    </div>
+  </section>
 
-<div id="customerGrid" class="grid"></div>
+  <!-- CHALLENGE -->
+  <div id="challenge">
+    <div class="pub-section">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-title">Why Pharma Companies Struggle<br>with Field Force</h2>
+      <div class="challenge-grid">
+        <div class="challenge-card">
+          <div class="challenge-card-bar" style="background:#C0392B"></div>
+          <div class="challenge-icon">📉</div>
+          <h3>High MR Attrition</h3>
+          <p>Representatives leave within months, disrupting territory coverage and hard-built doctor relationships.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-card-bar" style="background:#E67E22"></div>
+          <div class="challenge-icon">⏳</div>
+          <h3>Slow Hiring Cycles</h3>
+          <p>Weeks or months to fill a single vacancy — territories sit empty while competition moves in.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-card-bar" style="background:#8E44AD"></div>
+          <div class="challenge-icon">🗺️</div>
+          <h3>Tier-2 / Tier-3 Gaps</h3>
+          <p>No credible coverage in Kalahandi, Koraput, Balangir — exactly where growth is fastest.</p>
+        </div>
+        <div class="challenge-card">
+          <div class="challenge-card-bar" style="background:#16A085"></div>
+          <div class="challenge-icon">📋</div>
+          <h3>Payroll Complexity</h3>
+          <p>Managing salary, TA/DA, PF, ESIC in-house drains HR bandwidth that should be on growth.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="pub-section">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-title">End-to-End Field Force Solutions</h2>
+      <p class="section-sub">From sourcing your first MR to running monthly payroll — we handle every layer so you can focus on growth.</p>
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon" style="background:#E6F4F0">🎯</div>
+          <h3>MR Recruitment</h3>
+          <p>Sourcing, screening and shortlisting Medical Representatives tailored to your territory, product profile and CTC band.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon" style="background:#FEF3CD">💰</div>
+          <h3>Payroll Management</h3>
+          <p>Complete salary disbursement, TA/DA processing and monthly payslips. You get one clean invoice every month.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon" style="background:#E8F4FF">📍</div>
+          <h3>Field Deployment</h3>
+          <p>MRs placed and activated across Bhubaneswar, Cuttack, Sambalpur, Rourkela, Berhampur and Tier-2/3 markets.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon" style="background:#F0E6FF">✅</div>
+          <h3>Compliance Support</h3>
+          <p>Offer letters, PF registration, ESIC and statutory compliance managed as your team scales.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon" style="background:#FFE6E6">🔄</div>
+          <h3>Replacement Guarantee</h3>
+          <p>Fast replacement within agreed SLA if an MR exits — no disruption to your field operations or doctor calls.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon" style="background:#E6F0FF">🤝</div>
+          <h3>Dedicated Support</h3>
+          <p>One point of contact who knows your business. No call centres, no ticket queues — just a direct line.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div class="pub-section">
+      <div class="section-label">How It Works</div>
+      <h2 class="section-title">Requirement to Deployment<br>in 48–72 Hours</h2>
+      <p class="section-sub">A tight, no-waste process built around your speed requirements.</p>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-num">01</div>
+          <div class="step-title">Share Requirement</div>
+          <div class="step-body">Territory, CTC band and MR profile — takes 5 minutes via WhatsApp or form.</div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">02</div>
+          <div class="step-title">We Source & Screen</div>
+          <div class="step-body">Matched from our active pipeline. Communication, territory knowledge and stability checked.</div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">03</div>
+          <div class="step-title">You Interview</div>
+          <div class="step-body">Shortlist delivered within 48 hours. Your team does the final call — you stay in control.</div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">04</div>
+          <div class="step-title">Selection & Offer</div>
+          <div class="step-body">Offer letter, documentation and onboarding managed end-to-end by us.</div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">05</div>
+          <div class="step-title">Field Deployment</div>
+          <div class="step-body">MR is briefed, territory-mapped and field-ready. Doctor coverage begins immediately.</div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">06</div>
+          <div class="step-title">Payroll Live</div>
+          <div class="step-body">Salary, TA/DA and compliance handled monthly. One invoice, zero complexity.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COVERAGE -->
+  <section id="coverage">
+    <div class="pub-section">
+      <div class="section-label">Our Coverage</div>
+      <h2 class="section-title">Odisha-Wide Deployment</h2>
+      <p class="section-sub">From state capital to Tier-3 towns — we have candidates on the ground where you need them.</p>
+      <div class="coverage-wrap">
+        <div class="coverage-col">
+          <div class="coverage-col-head teal">Major Headquarters</div>
+          <div class="coverage-list">
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Bhubaneswar</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Cuttack</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Sambalpur</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Rourkela</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Berhampur</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--teal)"></div>Balasore</div>
+          </div>
+        </div>
+        <div class="coverage-col">
+          <div class="coverage-col-head gold">Tier-2 / Tier-3 Focus</div>
+          <div class="coverage-list">
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Kalahandi</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Nuapada</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Bargarh</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Koraput</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Jharsuguda</div>
+            <div class="coverage-item"><div class="coverage-dot" style="background:var(--gold)"></div>Balangir</div>
+          </div>
+        </div>
+        <div class="coverage-callout">
+          <div>
+            <h3 style="font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;">The Tier-2/3 Advantage</h3>
+            <p>Large national agencies focus on metros. We specialize in markets where pharma growth is actually happening — Tier-2 and Tier-3 towns where doctor loyalty is high, competition is low, and our territory knowledge is unmatched.</p>
+          </div>
+          <a href="#enquiry" class="btn btn-gold" style="flex-shrink:0;font-size:14px;padding:13px 24px;">Talk to Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <div id="pricing">
+    <div class="pub-section">
+      <div class="pricing-inner">
+        <div class="section-label">Transparent Pricing</div>
+        <h2 class="section-title">Simple Monthly Billing</h2>
+        <p class="section-sub">No hidden costs. No surprises. One invoice covering everything.</p>
+        <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+          <div class="pricing-table">
+            <div class="pricing-table-head">Sample Monthly Billing (per MR)</div>
+            <div class="pricing-row"><span class="label">MR Salary</span><span class="value">₹18,000 – ₹22,000</span></div>
+            <div class="pricing-row"><span class="label">TA / DA</span><span class="value">₹3,000 – ₹5,000</span></div>
+            <div class="pricing-row"><span class="label">Management Fee</span><span class="value">₹2,000 – ₹5,000</span></div>
+            <div class="pricing-row"><span class="label">GST (18%)</span><span class="value" style="font-size:13px">On management fee only</span></div>
+          </div>
+          <div style="flex:1;min-width:260px">
+            <div class="pricing-features">
+              <div class="pricing-feat">
+                <div class="pricing-feat-icon">🧾</div>
+                <div><h4>One Clean Invoice</h4><p>Single monthly bill — salary, TA/DA and fee consolidated.</p></div>
+              </div>
+              <div class="pricing-feat">
+                <div class="pricing-feat-icon">🔄</div>
+                <div><h4>Flexible Engagement</h4><p>Month-to-month or annual contract — scale as business demands.</p></div>
+              </div>
+              <div class="pricing-feat">
+                <div class="pricing-feat-icon">📈</div>
+                <div><h4>ROI from Month One</h4><p>Territory covered and MRs productive from day of joining.</p></div>
+              </div>
+              <div class="pricing-feat">
+                <div class="pricing-feat-icon">🛡️</div>
+                <div><h4>Compliance Included</h4><p>PF, ESIC and offer letters handled — no extra charge for basics.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENQUIRY -->
+  <section id="enquiry">
+    <div class="pub-section">
+      <div class="section-label">Get Started</div>
+      <div class="enquiry-wrap">
+        <div class="enquiry-left">
+          <h2>Ready to Build Your Field Force?</h2>
+          <p>Share your territory and requirement below. We'll respond within a few hours and have a shortlist ready in 48 hours.</p>
+          <div class="enquiry-promise"><span>✓</span> 48-hour shortlist delivery</div>
+          <div class="enquiry-promise"><span>✓</span> No upfront fee to start</div>
+          <div class="enquiry-promise"><span>✓</span> Replacement guarantee included</div>
+          <div class="enquiry-promise"><span>✓</span> Direct WhatsApp confirmation</div>
+          <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.08)">
+            <div style="font-size:13px;color:rgba(255,255,255,0.3);margin-bottom:8px">Or reach us directly</div>
+            <div style="font-size:15px;color:var(--gold-lt);font-weight:500">📞 +91 XXXXX XXXXX</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:4px">aaradhyasfs@gmail.com</div>
+          </div>
+        </div>
+        <div>
+          <form class="enquiry-form" id="enquiryForm" onsubmit="submitEnquiry(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" id="eq-company" placeholder="Pharma Co. Ltd" required>
+              </div>
+              <div class="form-group">
+                <label>Your Name *</label>
+                <input type="text" id="eq-name" placeholder="Your name" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="tel" id="eq-mobile" placeholder="+91 XXXXX XXXXX" required>
+              </div>
+              <div class="form-group">
+                <label>MRs Required</label>
+                <input type="number" id="eq-count" placeholder="e.g. 5" min="1">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Target Territory / HQ</label>
+              <input type="text" id="eq-territory" placeholder="e.g. Bhubaneswar, Kalahandi">
+            </div>
+            <div class="form-group">
+              <label>Services Needed</label>
+              <select id="eq-service">
+                <option value="">Select service</option>
+                <option>MR Recruitment Only</option>
+                <option>Payroll Outsourcing Only</option>
+                <option>Recruitment + Payroll (Full Service)</option>
+                <option>Compliance Support</option>
+                <option>Not sure — need advice</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Additional Details</label>
+              <textarea id="eq-notes" placeholder="Product division, CTC range, joining timeline..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;padding:14px;font-size:15px;">
+              Send via WhatsApp →
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="pub-footer">
+    <div><strong>Aaradhya Sales Force Solutions</strong><br><span style="font-size:12px">Odisha's Dedicated Pharma Field Force Partner</span></div>
+    <div style="text-align:right">
+      Recruitment • Payroll • Deployment • Compliance<br>
+      <span style="font-size:12px;color:rgba(255,255,255,0.2)">© 2025 Aaradhya SFS. All rights reserved.</span>
+    </div>
+  </footer>
+
+</div><!-- /public-view -->
+
+
+<!-- ════════════════════════════════════
+     LOGIN
+════════════════════════════════════ -->
+<div id="login-view">
+  <div style="min-height:100vh;background:var(--dark);display:flex;align-items:center;justify-content:center;position:relative">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(0,82,74,0.3) 0%,transparent 70%)"></div>
+    <div class="login-card" style="position:relative">
+      <div class="login-logo">Aaradhya <span>SFS</span></div>
+      <div class="login-sub">Internal Dashboard — Authorized Access Only</div>
+      <form class="login-form" onsubmit="doLogin(event)">
+        <div>
+          <label>Username</label>
+          <input type="text" id="login-user" placeholder="admin" autocomplete="off">
+        </div>
+        <div>
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••">
+        </div>
+        <div id="login-err" class="login-err hidden">Incorrect credentials</div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px;padding:13px">Login to Dashboard</button>
+      </form>
+      <div class="login-hint">Default: admin / aaradhya2025</div>
+      <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:12px;font-size:13px" onclick="showPublic()">← Back to Website</button>
+    </div>
+  </div>
 </div>
 
-<div id="profileScreen" style="display:none"></div>
+
+<!-- ════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════ -->
+<div id="dashboard-view">
+  <div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        Aaradhya <span>SFS</span>
+        <small>OPERATIONS HQ</small>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item active" onclick="switchPanel('overview',this)">
+          <span class="icon">📊</span> Overview
+        </div>
+        <div class="sidebar-item" onclick="switchPanel('candidates',this)">
+          <span class="icon">👤</span> Candidates
+        </div>
+        <div class="sidebar-item" onclick="switchPanel('clients',this)">
+          <span class="icon">🏢</span> Clients
+        </div>
+        <div class="sidebar-item" onclick="switchPanel('deployed',this)">
+          <span class="icon">🚀</span> Deployed MRs
+        </div>
+        <div class="sidebar-item" onclick="switchPanel('payroll',this)">
+          <span class="icon">💰</span> Payroll
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Leads</div>
+        <div class="sidebar-item" onclick="switchPanel('leads',this)">
+          <span class="icon">📥</span> Enquiries
+        </div>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">A</div>
+          <div>
+            <div style="font-size:13px;color:#fff">Admin</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.3)">Aaradhya SFS</div>
+          </div>
+        </div>
+        <div class="sidebar-item" onclick="doLogout()" style="margin-top:4px">
+          <span class="icon">🚪</span> Logout
+        </div>
+        <div class="sidebar-item" onclick="showPublic()" style="margin-top:2px">
+          <span class="icon">🌐</span> View Website
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dash-main">
+      <div class="dash-topbar">
+        <h1 id="dash-title">Overview</h1>
+        <div id="dash-topbar-actions"></div>
+      </div>
+      <div class="dash-content">
+
+        <!-- OVERVIEW -->
+        <div class="dash-panel active" id="panel-overview">
+          <div class="kpi-grid" id="kpi-grid"></div>
+          <div class="dash-grid-2">
+            <div class="dash-table-wrap">
+              <div class="dash-table-head">
+                <h3>Recent Candidates</h3>
+                <button class="btn btn-outline btn-sm" onclick="switchPanel('candidates',null)">View All</button>
+              </div>
+              <div id="overview-candidates-list"></div>
+            </div>
+            <div class="dash-table-wrap">
+              <div class="dash-table-head">
+                <h3>Recent Activity</h3>
+              </div>
+              <div class="activity-list" id="activity-list" style="padding:0 16px">
+                <div class="activity-item" style="padding:24px 0;color:var(--muted);font-size:14px">No activity yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CANDIDATES -->
+        <div class="dash-panel" id="panel-candidates">
+          <div class="filter-bar">
+            <input type="text" id="cand-search" placeholder="🔍  Search by name, HQ, company..." oninput="renderCandidates()">
+            <select id="cand-filter-status" onchange="renderCandidates()">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="deployed">Deployed</option>
+              <option value="pending">Pending</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <select id="cand-filter-hq" onchange="renderCandidates()">
+              <option value="">All HQs</option>
+            </select>
+          </div>
+          <div class="dash-table-wrap">
+            <div class="dash-table-head">
+              <h3>Candidate Pipeline</h3>
+              <button class="btn btn-primary btn-sm" onclick="openCandModal()">+ Add Candidate</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th><th>Mobile</th><th>HQ</th><th>Experience</th>
+                  <th>Current Company</th><th>Expected CTC</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="cand-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CLIENTS -->
+        <div class="dash-panel" id="panel-clients">
+          <div class="filter-bar">
+            <input type="text" id="client-search" placeholder="🔍  Search clients..." oninput="renderClients()">
+            <select id="client-filter-status" onchange="renderClients()">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="prospect">Prospect</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="dash-table-wrap">
+            <div class="dash-table-head">
+              <h3>Client Companies</h3>
+              <button class="btn btn-primary btn-sm" onclick="openClientModal()">+ Add Client</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th><th>Contact</th><th>Mobile</th><th>MRs Required</th>
+                  <th>MRs Deployed</th><th>Territory</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="client-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DEPLOYED MRs -->
+        <div class="dash-panel" id="panel-deployed">
+          <div class="filter-bar">
+            <input type="text" id="dep-search" placeholder="🔍  Search deployed MRs..." oninput="renderDeployed()">
+            <select id="dep-filter-client" onchange="renderDeployed()">
+              <option value="">All Clients</option>
+            </select>
+          </div>
+          <div class="dash-table-wrap">
+            <div class="dash-table-head">
+              <h3>Deployed MRs</h3>
+              <button class="btn btn-primary btn-sm" onclick="openDeployModal()">+ Add Deployment</button>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>MR Name</th><th>Client</th><th>HQ / Territory</th>
+                  <th>Salary</th><th>TA/DA</th><th>Mgmt Fee</th><th>Joining Date</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dep-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PAYROLL -->
+        <div class="dash-panel" id="panel-payroll">
+          <div class="payroll-summary" id="payroll-summary"></div>
+          <div class="dash-table-wrap">
+            <div class="dash-table-head">
+              <h3>Monthly Payroll Summary</h3>
+              <select id="payroll-month" onchange="renderPayroll()" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif"></select>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>MR Name</th><th>Client</th><th>HQ</th><th>Salary</th>
+                  <th>TA/DA</th><th>Mgmt Fee</th><th>Total Billing</th><th>GST (18%)</th><th>Grand Total</th>
+                </tr>
+              </thead>
+              <tbody id="payroll-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- LEADS / ENQUIRIES -->
+        <div class="dash-panel" id="panel-leads">
+          <div class="leads-list" id="leads-list">
+            <div style="color:var(--muted);font-size:14px;padding:24px 0">No enquiries yet. They'll appear here when submitted from the website.</div>
+          </div>
+        </div>
+
+      </div><!-- /dash-content -->
+    </main>
+
+  </div><!-- /dash-layout -->
+</div><!-- /dashboard-view -->
+
+
+<!-- ── MODALS ── -->
+<!-- Candidate Modal -->
+<div class="modal-overlay hidden" id="cand-modal" onclick="closeModalOutside(event,'cand-modal')">
+  <div class="modal" style="position:relative">
+    <button class="modal-close-btn" onclick="closeModal('cand-modal')">×</button>
+    <h2 id="cand-modal-title">Add Candidate</h2>
+    <form class="modal-form" onsubmit="saveCandidateForm(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="cf-name" required></div>
+        <div class="form-group"><label>Mobile *</label><input type="tel" id="cf-mobile" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>HQ / Location *</label>
+          <select id="cf-hq" required>
+            <option value="">Select HQ</option>
+            <option>Bhubaneswar</option><option>Cuttack</option><option>Sambalpur</option>
+            <option>Rourkela</option><option>Berhampur</option><option>Balasore</option>
+            <option>Kalahandi</option><option>Nuapada</option><option>Bargarh</option>
+            <option>Koraput</option><option>Jharsuguda</option><option>Balangir</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Experience (Years)</label><input type="number" id="cf-exp" min="0" placeholder="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Current Company</label><input type="text" id="cf-company" placeholder="If applicable"></div>
+        <div class="form-group"><label>Expected CTC (₹/mo)</label><input type="number" id="cf-ctc" placeholder="20000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="cf-status">
+            <option value="active">Active</option>
+            <option value="pending">Pending Review</option>
+            <option value="deployed">Deployed</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Source</label>
+          <select id="cf-source">
+            <option>Direct</option><option>Pharmacy College</option><option>Job Portal</option>
+            <option>Facebook Group</option><option>Referral</option><option>Ex-MR Network</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="cf-notes" rows="2" placeholder="Any additional details..."></textarea></div>
+      <input type="hidden" id="cf-id">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('cand-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Candidate</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Client Modal -->
+<div class="modal-overlay hidden" id="client-modal" onclick="closeModalOutside(event,'client-modal')">
+  <div class="modal" style="position:relative">
+    <button class="modal-close-btn" onclick="closeModal('client-modal')">×</button>
+    <h2 id="client-modal-title">Add Client</h2>
+    <form class="modal-form" onsubmit="saveClientForm(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Company Name *</label><input type="text" id="clf-company" required></div>
+        <div class="form-group"><label>Contact Person</label><input type="text" id="clf-contact" placeholder="HR / Sales Head"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Mobile *</label><input type="tel" id="clf-mobile" required></div>
+        <div class="form-group"><label>Email</label><input type="email" id="clf-email"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>MRs Required</label><input type="number" id="clf-reqd" min="0" placeholder="0"></div>
+        <div class="form-group"><label>Territory</label><input type="text" id="clf-territory" placeholder="Bhubaneswar, Cuttack..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Status</label>
+          <select id="clf-status">
+            <option value="prospect">Prospect</option>
+            <option value="active">Active Client</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Service Type</label>
+          <select id="clf-service">
+            <option>Recruitment Only</option>
+            <option>Payroll Only</option>
+            <option>Full Service</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="clf-notes" rows="2"></textarea></div>
+      <input type="hidden" id="clf-id">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('client-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Client</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Deploy Modal -->
+<div class="modal-overlay hidden" id="deploy-modal" onclick="closeModalOutside(event,'deploy-modal')">
+  <div class="modal" style="position:relative">
+    <button class="modal-close-btn" onclick="closeModal('deploy-modal')">×</button>
+    <h2 id="deploy-modal-title">Add Deployment</h2>
+    <form class="modal-form" onsubmit="saveDeployForm(event)">
+      <div class="form-row">
+        <div class="form-group"><label>MR Name *</label><input type="text" id="df-name" required></div>
+        <div class="form-group"><label>Mobile</label><input type="tel" id="df-mobile"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Client *</label>
+          <select id="df-client" required><option value="">Select client</option></select>
+        </div>
+        <div class="form-group"><label>HQ / Territory *</label>
+          <select id="df-hq" required>
+            <option value="">Select HQ</option>
+            <option>Bhubaneswar</option><option>Cuttack</option><option>Sambalpur</option>
+            <option>Rourkela</option><option>Berhampur</option><option>Balasore</option>
+            <option>Kalahandi</option><option>Nuapada</option><option>Bargarh</option>
+            <option>Koraput</option><option>Jharsuguda</option><option>Balangir</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Monthly Salary (₹)</label><input type="number" id="df-salary" placeholder="20000"></div>
+        <div class="form-group"><label>TA/DA (₹/mo)</label><input type="number" id="df-tada" placeholder="4000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Management Fee (₹/mo)</label><input type="number" id="df-fee" placeholder="3000"></div>
+        <div class="form-group"><label>Joining Date</label><input type="date" id="df-date"></div>
+      </div>
+      <div class="form-group"><label>Status</label>
+        <select id="df-status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <input type="hidden" id="df-id">
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal('deploy-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Deployment</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
+// ══════════════════════════════════
+// STATE / STORAGE
+// ══════════════════════════════════
+const KEYS = { candidates:'asfs_candidates', clients:'asfs_clients', deployed:'asfs_deployed', leads:'asfs_leads', activity:'asfs_activity' };
 
-const HQ_LAT=20.9964
-const HQ_LNG=83.0526
+function load(key) { try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch(e){ return []; } }
+function save(key,data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-const csvUrl="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3bMMFf71-vdGNiWFnf7pD9XuAAUSA7J-g08ocyC2LNiVOTUHi56lB-7bKTKj0KK9nJGs9vU0THQ0E/pub?gid=1044390124&single=true&output=csv"
+let candidates = load(KEYS.candidates);
+let clients    = load(KEYS.clients);
+let deployed   = load(KEYS.deployed);
+let leads      = load(KEYS.leads);
+let activity   = load(KEYS.activity);
 
-const tourPlan={
-Monday:["Juria"],Tuesday:["Ghess"],Wednesday:["Gaisilate"],
-Thursday:["Dava"],Friday:["Padampur"],Saturday:["Paikmal","Mandosil"]
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function now() { return new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function fmtINR(n) { return '₹' + Number(n||0).toLocaleString('en-IN'); }
+
+function addActivity(text) {
+  activity.unshift({ text, time: now() });
+  if (activity.length > 30) activity = activity.slice(0,30);
+  save(KEYS.activity, activity);
 }
 
-let customers=[],todayRoute=[],selected={}
-const today=new Date().toLocaleDateString('en-US',{weekday:'long'})
-const todayAreas=tourPlan[today]||[]
+// ══════════════════════════════════
+// VIEW SWITCHING
+// ══════════════════════════════════
+function showPublic()    { setView('public-view'); }
+function showLogin()     { setView('login-view'); }
+function showDashboard() { setView('dashboard-view'); initDashboard(); }
 
-function parseCSV(text){
-const rows=[];let row=[],value="",insideQuotes=false
-for(let char of text){
-if(char=='"'){insideQuotes=!insideQuotes;continue}
-if(char==","&&!insideQuotes){row.push(value);value="";continue}
-if((char=="\n"||char=="\r")&&!insideQuotes){
-if(value||row.length){row.push(value);rows.push(row)}
-row=[];value="";continue}
-value+=char}
-return rows
+function setView(id) {
+  ['public-view','login-view','dashboard-view'].forEach(v => {
+    document.getElementById(v).classList.remove('active');
+    document.getElementById(v).style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  el.classList.add('active');
 }
 
-fetch(csvUrl)
-.then(res=>res.text())
-.then(text=>{
+// ══════════════════════════════════
+// LOGIN
+// ══════════════════════════════════
+const CREDS = { user: 'admin', pass: 'aaradhya2025' };
 
-let rows=parseCSV(text).slice(1).filter(r=>r[0])
+function doLogin(e) {
+  e.preventDefault();
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if (u === CREDS.user && p === CREDS.pass) {
+    document.getElementById('login-err').classList.add('hidden');
+    showDashboard();
+  } else {
+    document.getElementById('login-err').classList.remove('hidden');
+  }
+}
+function doLogout() { showLogin(); }
 
-customers=rows.map(r=>({
-name:r[0],
-area:r[1],
-status:r[2],
-reason:r[3],
-reactivate:r[4],
-business:r[5],
-avgcreditcycle:r[8],
-due:parseFloat(r[6])||0,
-phone:r[13],
-lat:parseFloat(r[14]),
-lng:parseFloat(r[15]),
-lastSale:r[17],
-lastCollection:r[19],
-saleAmt:r[18],
-collectionAmt:r[20],
-OrdersDisMonth:r[21],
-route:r[22]
-}))
+// ══════════════════════════════════
+// PUBLIC ENQUIRY → WhatsApp
+// ══════════════════════════════════
+function submitEnquiry(e) {
+  e.preventDefault();
+  const company   = document.getElementById('eq-company').value;
+  const name      = document.getElementById('eq-name').value;
+  const mobile    = document.getElementById('eq-mobile').value;
+  const count     = document.getElementById('eq-count').value;
+  const territory = document.getElementById('eq-territory').value;
+  const service   = document.getElementById('eq-service').value;
+  const notes     = document.getElementById('eq-notes').value;
 
-todayRoute=customers.filter(c=>todayAreas.includes(c.area))
-customers.sort((a,b)=>getRecoveryScore(b)-getRecoveryScore(a))
+  // Save lead
+  const lead = { id: uid(), company, name, mobile, count, territory, service, notes, date: now(), status: 'new' };
+  leads.unshift(lead);
+  save(KEYS.leads, leads);
+  addActivity(`New enquiry from ${company} (${name})`);
 
-renderAll()
+  // WhatsApp
+  const msg = `*New Enquiry — Aaradhya SFS*\n\n*Company:* ${company}\n*Contact:* ${name}\n*Mobile:* ${mobile}\n*MRs Required:* ${count||'Not specified'}\n*Territory:* ${territory||'Not specified'}\n*Service:* ${service||'Not specified'}\n*Notes:* ${notes||'—'}`;
+  window.open(`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(msg)}`, '_blank');
 
-})
-
-function getRecoveryScore(c){
-const creditDays=Math.floor((new Date()-new Date(c.lastSale))/86400000)
-let score=0
-if(c.status.toLowerCase().includes("blocked")) score+=1000
-if(creditDays>90) score+=500
-else if(creditDays>60) score+=300
-score+=c.due/1000
-return score
+  document.getElementById('enquiryForm').reset();
+  alert('✅ Your enquiry has been sent! We will contact you within a few hours.');
 }
 
-function getDist(a,b,c,d){
-const R=6371
-const dLat=(c-a)*Math.PI/180
-const dLng=(d-b)*Math.PI/180
-const x=Math.sin(dLat/2)**2+
-Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*
-Math.sin(dLng/2)**2
-return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))
+// ══════════════════════════════════
+// DASHBOARD INIT
+// ══════════════════════════════════
+function initDashboard() {
+  renderOverview();
+  renderCandidates();
+  renderClients();
+  renderDeployed();
+  renderPayroll();
+  renderLeads();
 }
 
-function calcRoute(){
-let total=0,prevLat=HQ_LAT,prevLng=HQ_LNG
-todayRoute.forEach(p=>{
-if(p.lat){total+=getDist(prevLat,prevLng,p.lat,p.lng)
-prevLat=p.lat;prevLng=p.lng}})
-total+=getDist(prevLat,prevLng,HQ_LAT,HQ_LNG)
-return total
+function switchPanel(name, el) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = { overview:'Overview', candidates:'Candidate Pipeline', clients:'Client Companies', deployed:'Deployed MRs', payroll:'Payroll', leads:'Enquiries' };
+  document.getElementById('dash-title').textContent = titles[name] || name;
 }
 
-function renderAll(){
+// ── OVERVIEW ──
+function renderOverview() {
+  const activeCands  = candidates.filter(c => c.status === 'active').length;
+  const deployedMRs  = deployed.filter(d => d.status === 'active').length;
+  const activeClients= clients.filter(c => c.status === 'active').length;
+  const totalFee     = deployed.filter(d=>d.status==='active').reduce((s,d)=>s+Number(d.fee||0),0);
 
-let totalDist=calcRoute()
-let time=(totalDist/25).toFixed(1)
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card teal"><div class="kpi-label">Active Candidates</div><div class="kpi-val">${activeCands}</div><div class="kpi-sub">in pipeline</div></div>
+    <div class="kpi-card gold"><div class="kpi-label">Deployed MRs</div><div class="kpi-val">${deployedMRs}</div><div class="kpi-sub">currently active</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Active Clients</div><div class="kpi-val">${activeClients}</div><div class="kpi-sub">companies</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Monthly Revenue</div><div class="kpi-val" style="font-size:28px">${fmtINR(totalFee)}</div><div class="kpi-sub">mgmt fee / month</div></div>
+  `;
 
-routeBox.innerHTML=`
-<div class="leftBox">
-<b>🗓 Today’s Route – ${todayAreas.join(", ")}</b><br>
-✔ Parties: ${todayRoute.length}<br>
-✔ Round-trip: ${totalDist.toFixed(1)} km<br>
-✔ Travel time: ${time} hrs<br>
-<button class="tour" onclick="startTour()">🧭 Start Tour</button>
-</div>
+  // Recent candidates
+  const recent = [...candidates].slice(0, 5);
+  document.getElementById('overview-candidates-list').innerHTML = recent.length ? `
+    <table><thead><tr><th>Name</th><th>HQ</th><th>Status</th></tr></thead><tbody>
+    ${recent.map(c=>`<tr><td>${c.name}</td><td>${c.hq}</td><td><span class="tag tag-${c.status}">${c.status}</span></td></tr>`).join('')}
+    </tbody></table>` : `<div style="padding:24px;color:var(--muted);font-size:14px">No candidates yet.</div>`;
 
-<div class="partyList">
-${todayRoute.map((c,i)=>`
-<div onclick="openProfileByName('${c.name}')">
-${i+1}. ${c.name}<br>
-📍 ${getDist(HQ_LAT,HQ_LNG,c.lat,c.lng).toFixed(1)} km
-</div>`).join("")}
-</div>
-`
-
-customerGrid.innerHTML=""
-
-customers.forEach(c=>{
-
-let creditDays=Math.floor((new Date()-new Date(c.lastSale))/86400000)
-
-let tag=""
-if(c.status.toLowerCase().includes("blocked")) tag="🔴 BLOCKED"
-else if(c.due>0 && creditDays>60) tag="💰 COLLECT NOW"
-else if(creditDays>60) tag="🟡 FOLLOW UP"
-
-customerGrid.innerHTML+=`
-<div class="customer" onclick="openProfileByName('${c.name}')">
-<b>${c.name}</b><br>
-${c.area} | ₹${c.due} | 📍 ${
-(c.lat && c.lng)
-? getDist(HQ_LAT,HQ_LNG,c.lat,c.lng).toFixed(1)+" km":"—"}
-<br>${tag}
-</div>`
-})
-
+  // Activity
+  const al = document.getElementById('activity-list');
+  al.innerHTML = activity.length ? activity.slice(0,8).map(a=>`
+    <div class="activity-item">
+      <div class="activity-dot" style="background:var(--teal)"></div>
+      <div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div>
+    </div>`).join('') : '<div class="activity-item" style="padding:24px 0;color:var(--muted);font-size:14px">No activity yet.</div>';
 }
 
-function startTour(){
-let route=todayRoute.map(c=>`${c.lat},${c.lng}`).join("/")
-window.open(`https://www.google.com/maps/dir/${HQ_LAT},${HQ_LNG}/${route}/${HQ_LAT},${HQ_LNG}`)
+// ── CANDIDATES ──
+function renderCandidates() {
+  const q   = (document.getElementById('cand-search')?.value||'').toLowerCase();
+  const st  = document.getElementById('cand-filter-status')?.value||'';
+  const hq  = document.getElementById('cand-filter-hq')?.value||'';
+
+  // Populate HQ filter
+  const hqs = [...new Set(candidates.map(c=>c.hq).filter(Boolean))].sort();
+  const hqSel = document.getElementById('cand-filter-hq');
+  const curHQ = hqSel.value;
+  hqSel.innerHTML = '<option value="">All HQs</option>' + hqs.map(h=>`<option ${h===curHQ?'selected':''}>${h}</option>`).join('');
+
+  let data = candidates;
+  if (q)  data = data.filter(c => JSON.stringify(c).toLowerCase().includes(q));
+  if (st) data = data.filter(c => c.status === st);
+  if (hq) data = data.filter(c => c.hq === hq);
+
+  const tbody = document.getElementById('cand-table-body');
+  tbody.innerHTML = data.length ? data.map(c=>`
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.mobile}</td><td>${c.hq}</td>
+      <td>${c.exp||0} yr${c.exp==1?'':'s'}</td>
+      <td>${c.company||'—'}</td>
+      <td>${c.ctc ? fmtINR(c.ctc) : '—'}</td>
+      <td><span class="tag tag-${c.status}">${c.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editCandidate('${c.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCandidate('${c.id}')">✕</button>
+      </td>
+    </tr>`).join('') : `<tr class="empty-row"><td colspan="8">No candidates found. Add your first one!</td></tr>`;
 }
 
-function openProfileByName(name){
-
-selected=customers.find(c=>c.name===name)
-
-mainScreen.style.display="none"
-profileScreen.style.display="block"
-
-profileScreen.innerHTML=`
-<div class="profileWrapper">
-
-<div class="profileHeader">
-<button class="backBtn" onclick="goBack()">⬅ Back</button>
-Customer Profile
-</div>
-
-<div class="profileCard">
-
-<h2>${selected.name}📍${selected.area}📌${selected.route}</h2>
-
-<div class="info"><b>☎Phone:</b> <a href="tel:${selected.phone}">${selected.phone}</a></div>
-
-<div class="info">💰<b>Total Business:</b> ₹${selected.business}</div>
-<div class="info">💥<b>Total Due:</b> ₹${selected.due} ⏰<b>Avg Pymt Cycle:</b> ${selected.avgcreditcycle} Days</div>
-
-<div class="info">📅<b>Last Sale on:</b> ${selected.lastSale} 💰₹ ${selected.saleAmt}</div>
-<div class="info">📅<b>Last Payment on:</b> ${selected.lastCollection} 💰₹ ${selected.collectionAmt}</div>
-<div class="info">🎯<b>No of Orders This Month:</b> ${selected.OrdersDisMonth}</div>
-
-<div class="info"><b>🔰Status:</b> ${selected.status}</div>
-<div class="info"><b>💡Reason:</b> ${selected.reason}</div>
-<div class="info"><b>✅Pay Now:💰</b> ₹${selected.reactivate}</div>
-
-<div class="actionRow">
-<button class="call" onclick="call()">📞 Call</button>
-<button class="wa" onclick="whatsapp()">🟢 WhatsApp</button>
-<button class="nav" onclick="navigate()">📍 Navigate</button>
-</div>
-
-</div>
-</div>
-`
+function openCandModal(id) {
+  document.getElementById('cand-modal-title').textContent = id ? 'Edit Candidate' : 'Add Candidate';
+  const f = id ? candidates.find(c=>c.id===id) : {};
+  document.getElementById('cf-id').value       = f.id||'';
+  document.getElementById('cf-name').value     = f.name||'';
+  document.getElementById('cf-mobile').value   = f.mobile||'';
+  document.getElementById('cf-hq').value       = f.hq||'';
+  document.getElementById('cf-exp').value      = f.exp||'';
+  document.getElementById('cf-company').value  = f.company||'';
+  document.getElementById('cf-ctc').value      = f.ctc||'';
+  document.getElementById('cf-status').value   = f.status||'active';
+  document.getElementById('cf-source').value   = f.source||'Direct';
+  document.getElementById('cf-notes').value    = f.notes||'';
+  document.getElementById('cand-modal').classList.remove('hidden');
+}
+function editCandidate(id) { openCandModal(id); }
+function deleteCandidate(id) {
+  if (!confirm('Delete this candidate?')) return;
+  const c = candidates.find(x=>x.id===id);
+  candidates = candidates.filter(x=>x.id!==id);
+  save(KEYS.candidates, candidates);
+  addActivity(`Removed candidate: ${c?.name}`);
+  renderCandidates(); renderOverview();
+}
+function saveCandidateForm(e) {
+  e.preventDefault();
+  const id = document.getElementById('cf-id').value;
+  const obj = {
+    id: id || uid(),
+    name:    document.getElementById('cf-name').value.trim(),
+    mobile:  document.getElementById('cf-mobile').value.trim(),
+    hq:      document.getElementById('cf-hq').value,
+    exp:     document.getElementById('cf-exp').value,
+    company: document.getElementById('cf-company').value.trim(),
+    ctc:     document.getElementById('cf-ctc').value,
+    status:  document.getElementById('cf-status').value,
+    source:  document.getElementById('cf-source').value,
+    notes:   document.getElementById('cf-notes').value.trim(),
+  };
+  if (id) { candidates = candidates.map(c=>c.id===id?obj:c); addActivity(`Updated candidate: ${obj.name}`); }
+  else    { candidates.unshift(obj); addActivity(`Added candidate: ${obj.name}`); }
+  save(KEYS.candidates, candidates);
+  closeModal('cand-modal'); renderCandidates(); renderOverview();
 }
 
-function goBack(){
-profileScreen.style.display="none"
-mainScreen.style.display="block"
+// ── CLIENTS ──
+function renderClients() {
+  const q  = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const st = document.getElementById('client-filter-status')?.value||'';
+  let data = clients;
+  if (q)  data = data.filter(c=>JSON.stringify(c).toLowerCase().includes(q));
+  if (st) data = data.filter(c=>c.status===st);
+
+  const tbody = document.getElementById('client-table-body');
+  tbody.innerHTML = data.length ? data.map(c=>{
+    const depCount = deployed.filter(d=>d.clientId===c.id && d.status==='active').length;
+    return `<tr>
+      <td><strong>${c.company}</strong></td>
+      <td>${c.contact||'—'}</td><td>${c.mobile}</td>
+      <td>${c.reqd||0}</td><td>${depCount}</td>
+      <td>${c.territory||'—'}</td>
+      <td><span class="tag tag-${c.status==='active'?'active':c.status==='prospect'?'pending':'inactive'}">${c.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editClient('${c.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr class="empty-row"><td colspan="8">No clients yet. Add your first client!</td></tr>`;
 }
 
-function call(){window.location.href="tel:"+selected.phone}
-function whatsapp(){window.open(`https://wa.me/91${selected.phone}`)}
-function navigate(){window.open(`https://www.google.com/maps?q=${selected.lat},${selected.lng}`)}
-
-if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('service-worker.js')
+function openClientModal(id) {
+  document.getElementById('client-modal-title').textContent = id ? 'Edit Client' : 'Add Client';
+  const f = id ? clients.find(c=>c.id===id) : {};
+  document.getElementById('clf-id').value        = f.id||'';
+  document.getElementById('clf-company').value   = f.company||'';
+  document.getElementById('clf-contact').value   = f.contact||'';
+  document.getElementById('clf-mobile').value    = f.mobile||'';
+  document.getElementById('clf-email').value     = f.email||'';
+  document.getElementById('clf-reqd').value      = f.reqd||'';
+  document.getElementById('clf-territory').value = f.territory||'';
+  document.getElementById('clf-status').value    = f.status||'prospect';
+  document.getElementById('clf-service').value   = f.service||'Full Service';
+  document.getElementById('clf-notes').value     = f.notes||'';
+  document.getElementById('client-modal').classList.remove('hidden');
+}
+function editClient(id) { openClientModal(id); }
+function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  const c = clients.find(x=>x.id===id);
+  clients = clients.filter(x=>x.id!==id);
+  save(KEYS.clients, clients);
+  addActivity(`Removed client: ${c?.company}`);
+  renderClients(); renderOverview();
+}
+function saveClientForm(e) {
+  e.preventDefault();
+  const id = document.getElementById('clf-id').value;
+  const obj = {
+    id:        id||uid(),
+    company:   document.getElementById('clf-company').value.trim(),
+    contact:   document.getElementById('clf-contact').value.trim(),
+    mobile:    document.getElementById('clf-mobile').value.trim(),
+    email:     document.getElementById('clf-email').value.trim(),
+    reqd:      document.getElementById('clf-reqd').value,
+    territory: document.getElementById('clf-territory').value.trim(),
+    status:    document.getElementById('clf-status').value,
+    service:   document.getElementById('clf-service').value,
+    notes:     document.getElementById('clf-notes').value.trim(),
+  };
+  if (id) { clients = clients.map(c=>c.id===id?obj:c); addActivity(`Updated client: ${obj.company}`); }
+  else    { clients.unshift(obj); addActivity(`Added client: ${obj.company}`); }
+  save(KEYS.clients, clients);
+  closeModal('client-modal'); renderClients(); renderOverview();
 }
 
+// ── DEPLOYED ──
+function populateClientDropdowns() {
+  const opts = clients.map(c=>`<option value="${c.id}">${c.company}</option>`).join('');
+  ['df-client','dep-filter-client'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = el.value;
+    el.innerHTML = (id==='dep-filter-client'?'<option value="">All Clients</option>':'<option value="">Select client</option>') + opts;
+    if (cur) el.value = cur;
+  });
+}
+
+function renderDeployed() {
+  populateClientDropdowns();
+  const q   = (document.getElementById('dep-search')?.value||'').toLowerCase();
+  const cid = document.getElementById('dep-filter-client')?.value||'';
+  let data  = deployed;
+  if (q)   data = data.filter(d=>JSON.stringify(d).toLowerCase().includes(q));
+  if (cid) data = data.filter(d=>d.clientId===cid);
+
+  const tbody = document.getElementById('dep-table-body');
+  tbody.innerHTML = data.length ? data.map(d=>{
+    const cl = clients.find(c=>c.id===d.clientId);
+    return `<tr>
+      <td><strong>${d.name}</strong>${d.mobile?`<br><small style="color:var(--muted)">${d.mobile}</small>`:''}</td>
+      <td>${cl?.company||d.clientId||'—'}</td>
+      <td>${d.hq}</td>
+      <td>${fmtINR(d.salary)}</td><td>${fmtINR(d.tada)}</td><td>${fmtINR(d.fee)}</td>
+      <td>${d.date||'—'}</td>
+      <td><span class="tag tag-${d.status==='active'?'active':'inactive'}">${d.status}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="editDeploy('${d.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteDeploy('${d.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr class="empty-row"><td colspan="9">No deployed MRs yet. Add a deployment to get started!</td></tr>`;
+}
+
+function openDeployModal(id) {
+  populateClientDropdowns();
+  document.getElementById('deploy-modal-title').textContent = id ? 'Edit Deployment' : 'Add Deployment';
+  const f = id ? deployed.find(d=>d.id===id) : {};
+  document.getElementById('df-id').value      = f.id||'';
+  document.getElementById('df-name').value    = f.name||'';
+  document.getElementById('df-mobile').value  = f.mobile||'';
+  document.getElementById('df-client').value  = f.clientId||'';
+  document.getElementById('df-hq').value      = f.hq||'';
+  document.getElementById('df-salary').value  = f.salary||'';
+  document.getElementById('df-tada').value    = f.tada||'';
+  document.getElementById('df-fee').value     = f.fee||'';
+  document.getElementById('df-date').value    = f.date||'';
+  document.getElementById('df-status').value  = f.status||'active';
+  document.getElementById('deploy-modal').classList.remove('hidden');
+}
+function editDeploy(id) { openDeployModal(id); }
+function deleteDeploy(id) {
+  if (!confirm('Remove this deployment?')) return;
+  const d = deployed.find(x=>x.id===id);
+  deployed = deployed.filter(x=>x.id!==id);
+  save(KEYS.deployed, deployed);
+  addActivity(`Removed deployment: ${d?.name}`);
+  renderDeployed(); renderPayroll(); renderOverview();
+}
+function saveDeployForm(e) {
+  e.preventDefault();
+  const id = document.getElementById('df-id').value;
+  const obj = {
+    id:       id||uid(),
+    name:     document.getElementById('df-name').value.trim(),
+    mobile:   document.getElementById('df-mobile').value.trim(),
+    clientId: document.getElementById('df-client').value,
+    hq:       document.getElementById('df-hq').value,
+    salary:   Number(document.getElementById('df-salary').value)||0,
+    tada:     Number(document.getElementById('df-tada').value)||0,
+    fee:      Number(document.getElementById('df-fee').value)||0,
+    date:     document.getElementById('df-date').value,
+    status:   document.getElementById('df-status').value,
+  };
+  if (id) { deployed = deployed.map(d=>d.id===id?obj:d); addActivity(`Updated deployment: ${obj.name}`); }
+  else    { deployed.unshift(obj); addActivity(`Added deployment: ${obj.name} @ ${clients.find(c=>c.id===obj.clientId)?.company||'unknown client'}`); }
+  save(KEYS.deployed, deployed);
+  closeModal('deploy-modal'); renderDeployed(); renderPayroll(); renderOverview();
+}
+
+// ── PAYROLL ──
+function renderPayroll() {
+  // Build month selector
+  const months = [];
+  const now2 = new Date();
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now2.getFullYear(), now2.getMonth() - i, 1);
+    const val = d.toISOString().slice(0,7);
+    const label = d.toLocaleString('en-IN',{month:'long',year:'numeric'});
+    months.push({ val, label });
+  }
+  const sel = document.getElementById('payroll-month');
+  const cur = sel.value || months[0].val;
+  sel.innerHTML = months.map(m=>`<option value="${m.val}" ${m.val===cur?'selected':''}>${m.label}</option>`).join('');
+
+  const activeDep = deployed.filter(d=>d.status==='active');
+  const totalSalary = activeDep.reduce((s,d)=>s+d.salary,0);
+  const totalTada   = activeDep.reduce((s,d)=>s+d.tada,0);
+  const totalFee    = activeDep.reduce((s,d)=>s+d.fee,0);
+  const totalGST    = Math.round(totalFee * 0.18);
+  const grandTotal  = totalSalary + totalTada + totalFee + totalGST;
+
+  document.getElementById('payroll-summary').innerHTML = `
+    <div class="payroll-sum-card"><div class="payroll-sum-val">${activeDep.length}</div><div class="payroll-sum-label">Active MRs</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-val" style="font-size:22px">${fmtINR(totalSalary)}</div><div class="payroll-sum-label">Total Salary</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-val" style="font-size:22px">${fmtINR(totalTada)}</div><div class="payroll-sum-label">Total TA/DA</div></div>
+    <div class="payroll-sum-card"><div class="payroll-sum-val" style="font-size:22px">${fmtINR(totalFee)}</div><div class="payroll-sum-label">Mgmt Fee</div></div>
+    <div class="payroll-sum-card" style="background:var(--teal);border-color:var(--teal)"><div class="payroll-sum-val" style="color:#fff;font-size:20px">${fmtINR(grandTotal)}</div><div class="payroll-sum-label" style="color:rgba(255,255,255,0.7)">Grand Total Billing</div></div>
+  `;
+
+  const tbody = document.getElementById('payroll-table-body');
+  tbody.innerHTML = activeDep.length ? activeDep.map(d=>{
+    const cl    = clients.find(c=>c.id===d.clientId);
+    const gst   = Math.round(d.fee * 0.18);
+    const total = d.salary + d.tada + d.fee + gst;
+    return `<tr>
+      <td><strong>${d.name}</strong></td>
+      <td>${cl?.company||'—'}</td><td>${d.hq}</td>
+      <td>${fmtINR(d.salary)}</td><td>${fmtINR(d.tada)}</td><td>${fmtINR(d.fee)}</td>
+      <td>${fmtINR(d.salary+d.tada+d.fee)}</td>
+      <td>${fmtINR(gst)}</td>
+      <td><strong>${fmtINR(total)}</strong></td>
+    </tr>`;
+  }).join('') + `<tr style="background:#F4F7F6">
+    <td colspan="3"><strong>TOTAL</strong></td>
+    <td><strong>${fmtINR(totalSalary)}</strong></td>
+    <td><strong>${fmtINR(totalTada)}</strong></td>
+    <td><strong>${fmtINR(totalFee)}</strong></td>
+    <td><strong>${fmtINR(totalSalary+totalTada+totalFee)}</strong></td>
+    <td><strong>${fmtINR(totalGST)}</strong></td>
+    <td><strong style="color:var(--teal)">${fmtINR(grandTotal)}</strong></td>
+  </tr>` : `<tr class="empty-row"><td colspan="9">No active deployments. Add MRs in the Deployed section.</td></tr>`;
+}
+
+// ── LEADS ──
+function renderLeads() {
+  const container = document.getElementById('leads-list');
+  container.innerHTML = leads.length ? leads.map(l=>`
+    <div class="lead-card">
+      <div>
+        <h4>${l.company}</h4>
+        <div class="lead-meta">
+          <span>👤 ${l.name}</span>
+          <span>📞 ${l.mobile}</span>
+          ${l.territory?`<span>📍 ${l.territory}</span>`:''}
+          ${l.count?`<span>👥 ${l.count} MRs</span>`:''}
+          ${l.service?`<span>🔧 ${l.service}</span>`:''}
+          <span style="color:var(--muted)">🕐 ${l.date}</span>
+        </div>
+        ${l.notes?`<div style="margin-top:8px;font-size:13px;color:var(--muted)">${l.notes}</div>`:''}
+      </div>
+      <div class="lead-actions">
+        <a href="https://wa.me/${l.mobile.replace(/\D/g,'')}" target="_blank" class="btn btn-outline btn-sm">WhatsApp</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteLead('${l.id}')">✕</button>
+      </div>
+    </div>
+  `).join('') : `<div style="color:var(--muted);font-size:14px;padding:24px 0">No enquiries yet. They'll appear here when submitted from the website.</div>`;
+}
+
+function deleteLead(id) {
+  if (!confirm('Remove this enquiry?')) return;
+  leads = leads.filter(l=>l.id!==id);
+  save(KEYS.leads, leads);
+  renderLeads();
+}
+
+// ── MODALS ──
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function closeModalOutside(e, id) { if (e.target.id===id) closeModal(id); }
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+showPublic();
 </script>
-
 </body>
-
 </html>
-
-
-
-
-
-
-
